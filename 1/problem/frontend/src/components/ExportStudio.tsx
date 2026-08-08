@@ -12,22 +12,23 @@ const FORMATS: { id: ExportFormat; label: string; ext: string }[] = [
 
 interface ExportStudioProps {
   notice: string | null
+  busy: boolean
   onDismissNotice: () => void
-  onExport: () => void
+  onExport: (format: ExportFormat) => void
   onDownload: () => void
 }
 
 export function ExportStudio({
   notice,
+  busy,
   onDismissNotice,
   onExport,
   onDownload,
 }: ExportStudioProps) {
   const [format, setFormat] = useState<ExportFormat>('csv')
-  const stage = 'idle' as const
+  const stage = busy ? ('queued' as const) : ('idle' as const)
   const progress = 0
   const ready = false
-  const busy = false
 
   return (
     <section className="studio">
@@ -54,6 +55,7 @@ export function ExportStudio({
                   role="radio"
                   aria-checked={format === item.id}
                   className={format === item.id ? 'format is-on' : 'format'}
+                  disabled={busy}
                   onClick={() => setFormat(item.id)}
                 >
                   <strong>{item.label}</strong>
@@ -69,7 +71,7 @@ export function ExportStudio({
                 type="button"
                 className="btn btn--primary"
                 disabled={busy}
-                onClick={onExport}
+                onClick={() => onExport(format)}
               >
                 {busy ? 'Đang xử lý…' : 'Export'}
               </button>
@@ -98,8 +100,12 @@ export function ExportStudio({
           <div className="status-board">
             <div className="status-board__top">
               <div>
-                <span className="badge badge--idle">Idle</span>
-                <p className="status-board__msg">Sẵn sàng export</p>
+                <span className={busy ? 'badge badge--queued' : 'badge badge--idle'}>
+                  {busy ? 'Queued' : 'Idle'}
+                </span>
+                <p className="status-board__msg">
+                  {busy ? 'Đang gửi job…' : 'Sẵn sàng export'}
+                </p>
               </div>
               <span className="status-board__pct">{progress}%</span>
             </div>

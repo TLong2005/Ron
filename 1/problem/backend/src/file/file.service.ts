@@ -16,12 +16,19 @@ export class FileService {
 
     async exportFile(type: string) {
 
-        await this.fileQueue.add("export-file",{
-            type:type
-        });
+        const job = await this.fileQueue.add(
+            "export-file",
+            {
+                type: type
+            },
+            {
+                attempts: 3, // retry
+                backoff: 1000
+            }
+        );
 
         return {
-            status:200
+            status: 200,
         }
     }
 }
