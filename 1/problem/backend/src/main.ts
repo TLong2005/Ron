@@ -1,16 +1,22 @@
 import { NestFactory } from '@nestjs/core';
-import { Logger, VersioningType } from '@nestjs/common';
+import { VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter(),
+  );
   const config = app.get(ConfigService);
 
   const prefix = config.get<string>('API_PREFIX', 'api');
   const version = config.get<string>('API_VERSION', '1');
   const port = config.get<number>('PORT', 3000);
-
 
   app.setGlobalPrefix(prefix);
   app.enableVersioning({
@@ -18,7 +24,7 @@ async function bootstrap() {
     defaultVersion: version,
   });
 
-  await app.listen(port);
-  console.log("App is running on port", port);
+  await app.listen(port, '0.0.0.0');
+  console.log('App is running on port', port);
 }
-bootstrap();
+void bootstrap();
