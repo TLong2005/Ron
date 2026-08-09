@@ -33,6 +33,9 @@ dependencies:
   bullmq:
     specifier: ^6.0.9
     version: 6.0.9(ioredis@5.11.1)(pg@8.22.0)
+  csv-stringify:
+    specifier: ^6.8.3
+    version: 6.8.3
   ioredis:
     specifier: ^5.8.2
     version: 5.11.1
@@ -2837,6 +2840,10 @@ packages:
       shebang-command: 2.0.0
       which: 2.0.2
     dev: true
+
+  /csv-stringify@6.8.3:
+    resolution: {integrity: sha512-gIeSCvq5F4VtXV3naV3VAewLhBkiZBz+PPhTOA8H3Y8h/ELa+R1ml0GZck/4/Nzo9ep2lvOluilJ6MJlbZsKMA==}
+    dev: false
 
   /dayjs@1.11.21:
     resolution: {integrity: sha512-98IT+HOahAisibz/yjKbzuOBwYcjJ7BCLPzARyHiyEBmRz4fatF+KPJszEHXsGYjUG234aH/cOjW1wwTbKUZlA==}

@@ -1,10 +1,23 @@
+import type { ExportStage } from '../types/export'
 import { Pipeline } from './Pipeline'
 
 const DATASET = { label: 'Orders', sizeMb: 500 }
 
+const BADGE: Record<ExportStage, string> = {
+  idle: 'Idle',
+  queued: 'Queued',
+  querying: 'Querying',
+  writing: 'Writing',
+  ready: 'Ready',
+  failed: 'Failed',
+}
+
 interface ExportStudioProps {
   notice: string | null
   busy: boolean
+  stage: ExportStage
+  progress: number
+  jobId: string | null
   onDismissNotice: () => void
   onExport: () => void
   onDownload: () => void
@@ -13,13 +26,14 @@ interface ExportStudioProps {
 export function ExportStudio({
   notice,
   busy,
+  stage,
+  progress,
+  jobId,
   onDismissNotice,
   onExport,
   onDownload,
 }: ExportStudioProps) {
-  const stage = busy ? ('queued' as const) : ('idle' as const)
-  const progress = 0
-  const ready = false
+  const ready = stage === 'ready'
 
   return (
     <section className="studio">
@@ -71,14 +85,19 @@ export function ExportStudio({
           <div className="status-board">
             <div className="status-board__top">
               <div>
-                <span className={busy ? 'badge badge--queued' : 'badge badge--idle'}>
-                  {busy ? 'Queued' : 'Idle'}
+                <span className={`badge badge--${stage === 'idle' ? 'idle' : stage === 'failed' ? 'failed' : 'queued'}`}>
+                  {BADGE[stage]}
                 </span>
                 <p className="status-board__msg">
-                  {busy ? 'Đang gửi job…' : 'Sẵn sàng export'}
+                  {stage === 'idle' && 'Sẵn sàng export'}
+                  {stage === 'queued' && 'Job đang chờ trong queue…'}
+                  {stage === 'querying' && 'Đang query DB…'}
+                  {stage === 'writing' && 'Worker đang ghi file…'}
+                  {stage === 'ready' && 'File sẵn sàng'}
+                  {stage === 'failed' && 'Export thất bại'}
                 </p>
               </div>
-              <span className="status-board__pct">{progress}%</span>
+              <span className="status-board__pct">{Math.round(progress)}%</span>
             </div>
 
             <Pipeline stage={stage} progress={progress} />
@@ -93,8 +112,8 @@ export function ExportStudio({
                 <dd>CSV</dd>
               </div>
               <div>
-                <dt>Size</dt>
-                <dd>~{DATASET.sizeMb}MB</dd>
+                <dt>Job</dt>
+                <dd>{jobId ?? '—'}</dd>
               </div>
             </dl>
           </div>

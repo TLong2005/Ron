@@ -3,8 +3,6 @@ import { BullModule } from '@nestjs/bullmq';
 import { OrderModule } from '../order/order.module';
 import { QueueName } from './constants';
 import { FileConsumer } from './file.consumer';
-import { FileController } from './file.controller';
-import { FileService } from './file.service';
 
 @Module({
   imports: [
@@ -13,7 +11,6 @@ import { FileService } from './file.service';
     }),
     OrderModule,
   ],
-  controllers: [FileController],
-  providers: [FileService, FileConsumer],
+  providers: [FileConsumer],
 })
-export class FileModule {}
+export class FileProcessorModule {}
