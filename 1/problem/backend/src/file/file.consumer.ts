@@ -23,10 +23,14 @@ export class FileConsumer extends WorkerHost {
   }
 
   private async exportCSV() {
-    console.log('ok');
+    const orders = this.orderService.getAll();
+
+    for await (const order of orders) {
+      
+    }
   }
 
-  private async exportXlsx() {}
+  private async exportXlsx() { }
 
-  private async exportJson() {}
+  private async exportJson() { }
 }

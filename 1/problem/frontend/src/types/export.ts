@@ -1,4 +1,4 @@
-export type ExportFormat = 'csv' | 'xlsx' | 'json'
+export type ExportFormat = 'csv'
 
 export type ExportStage =
   | 'idle'
