@@ -1,20 +1,12 @@
-import { useState } from 'react'
-import type { ExportFormat } from '../types/export'
 import { Pipeline } from './Pipeline'
 
 const DATASET = { label: 'Orders', sizeMb: 500 }
-
-const FORMATS: { id: ExportFormat; label: string; ext: string }[] = [
-  { id: 'csv', label: 'CSV', ext: '.csv' },
-  { id: 'xlsx', label: 'Excel', ext: '.xlsx' },
-  { id: 'json', label: 'JSON', ext: '.json' },
-]
 
 interface ExportStudioProps {
   notice: string | null
   busy: boolean
   onDismissNotice: () => void
-  onExport: (format: ExportFormat) => void
+  onExport: () => void
   onDownload: () => void
 }
 
@@ -25,7 +17,6 @@ export function ExportStudio({
   onExport,
   onDownload,
 }: ExportStudioProps) {
-  const [format, setFormat] = useState<ExportFormat>('csv')
   const stage = busy ? ('queued' as const) : ('idle' as const)
   const progress = 0
   const ready = false
@@ -39,31 +30,11 @@ export function ExportStudio({
             <div className="dataset">
               <div>
                 <strong>{DATASET.label}</strong>
-                <p>Dữ liệu đơn hàng</p>
+                <p>Dữ liệu đơn hàng · CSV</p>
               </div>
               <span className="dataset__size">~{DATASET.sizeMb}MB</span>
             </div>
           </div>
-
-          <fieldset className="field">
-            <legend className="field__label">Định dạng</legend>
-            <div className="format-row" role="radiogroup" aria-label="Format">
-              {FORMATS.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={format === item.id}
-                  className={format === item.id ? 'format is-on' : 'format'}
-                  disabled={busy}
-                  onClick={() => setFormat(item.id)}
-                >
-                  <strong>{item.label}</strong>
-                  <span>{item.ext}</span>
-                </button>
-              ))}
-            </div>
-          </fieldset>
 
           <div className="studio__actions">
             {!ready ? (
@@ -71,7 +42,7 @@ export function ExportStudio({
                 type="button"
                 className="btn btn--primary"
                 disabled={busy}
-                onClick={() => onExport(format)}
+                onClick={onExport}
               >
                 {busy ? 'Đang xử lý…' : 'Export'}
               </button>
@@ -119,7 +90,7 @@ export function ExportStudio({
               </div>
               <div>
                 <dt>Format</dt>
-                <dd>{format.toUpperCase()}</dd>
+                <dd>CSV</dd>
               </div>
               <div>
                 <dt>Size</dt>
