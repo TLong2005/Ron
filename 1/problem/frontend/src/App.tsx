@@ -2,11 +2,15 @@ import { useEffect, useRef, useState } from 'react'
 import { exportFile, getExportDownloadUrl, getExportStatus } from './api/file'
 import { Atmosphere } from './components/Atmosphere'
 import { ExportStudio } from './components/ExportStudio'
+import { IdempotencyLab } from './components/IdempotencyLab'
 import { mapJobStateToStage, type ExportStage } from './types/export'
 
 const POLL_MS = 1500
 
+type AppView = 'export' | 'idempotency'
+
 export default function App() {
+  const [view, setView] = useState<AppView>('idempotency')
   const [notice, setNotice] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [stage, setStage] = useState<ExportStage>('idle')
@@ -97,27 +101,47 @@ export default function App() {
       <header className="topbar">
         <div className="brand">
           <span className="brand__mark" aria-hidden="true" />
-          <span className="brand__name">Export</span>
+          <span className="brand__name">{view === 'export' ? 'Export' : 'Idempotency'}</span>
         </div>
+        <nav className="topbar__nav" aria-label="Labs">
+          <button
+            type="button"
+            className={view === 'idempotency' ? 'btn btn--primary' : 'btn'}
+            onClick={() => setView('idempotency')}
+          >
+            Problem 03
+          </button>
+          <button
+            type="button"
+            className={view === 'export' ? 'btn btn--primary' : 'btn'}
+            onClick={() => setView('export')}
+          >
+            Export
+          </button>
+        </nav>
       </header>
 
       <main>
-        <ExportStudio
-          notice={notice}
-          busy={busy}
-          stage={stage}
-          progress={progress}
-          jobId={jobId}
-          onDismissNotice={() => setNotice(null)}
-          onExport={handleExport}
-          onDownload={() => {
-            if (!jobId) {
-              setNotice('Chưa có job để tải')
-              return
-            }
-            window.location.href = getExportDownloadUrl(jobId)
-          }}
-        />
+        {view === 'idempotency' ? (
+          <IdempotencyLab />
+        ) : (
+          <ExportStudio
+            notice={notice}
+            busy={busy}
+            stage={stage}
+            progress={progress}
+            jobId={jobId}
+            onDismissNotice={() => setNotice(null)}
+            onExport={handleExport}
+            onDownload={() => {
+              if (!jobId) {
+                setNotice('Chưa có job để tải')
+                return
+              }
+              window.location.href = getExportDownloadUrl(jobId)
+            }}
+          />
+        )}
       </main>
     </div>
   )
